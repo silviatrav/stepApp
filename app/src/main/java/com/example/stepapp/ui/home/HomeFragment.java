@@ -41,6 +41,7 @@ public class HomeFragment extends Fragment {
     private SensorManager mSensorManager;
 
     // Step Detector sensor
+    private Sensor mSensorSD;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,7 +56,8 @@ public class HomeFragment extends Fragment {
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mSensorACC = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
-        // instance of the sensor manager for the step detector
+        // Instance of the sensor manager for the step detector
+       mSensorSD = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
         // TODO 11
         // instantiate the StepCounterListener
@@ -72,13 +74,19 @@ public class HomeFragment extends Fragment {
                     Toast.makeText(getContext(), "START", Toast.LENGTH_SHORT).show();
 
                     // TODO 3: Check if the Accelerometer sensor exists
-                    // Check if the Step detector sensor exists
 
                     if (mSensorACC != null){
                         // Register the ACC listener
                         mSensorManager.registerListener(listener, mSensorACC, SensorManager.SENSOR_DELAY_NORMAL);
                     }else{
                         Toast.makeText(getContext(),R.string.acc_not_available, Toast.LENGTH_SHORT).show();
+                    }
+
+                    // Check if the Step detector sensor exists
+                    if (mSensorSD != null){
+                        mSensorManager.registerListener(listener, mSensorSD, SensorManager.SENSOR_DELAY_NORMAL);
+                    }else{
+                        Toast.makeText(getContext(), R.string.step_not_available, Toast.LENGTH_SHORT).show();
                     }
 
                 } else if (group.getCheckedButtonId() == R.id.toggleStop) {
@@ -114,6 +122,7 @@ class StepCounterListener implements SensorEventListener {
 
     // TextView
     TextView stepsCountTextView;
+    // ProgressBar
 
     //TODO 10
     public StepCounterListener(TextView tv){
@@ -139,7 +148,7 @@ class StepCounterListener implements SensorEventListener {
             //////////////////////////// -- PRINT ACC VALUES -- ////////////////////////////////////
             // TODO 7: Uncomment the following code
 
-                // Timestamp
+            // Timestamp
             long timeInMillis = System.currentTimeMillis() + (event.timestamp - SystemClock.elapsedRealtimeNanos()) / 1000000;
 
             // Convert the timestamp to date
@@ -157,8 +166,6 @@ class StepCounterListener implements SensorEventListener {
 
             }
 
-
-
             ////////////////////////////////////////////////////////////////////////////////////////
 
             // TODO 8: Compute the ACC magnitude
@@ -174,9 +181,15 @@ class StepCounterListener implements SensorEventListener {
 
             break;
 
-            // case Step detector
+            // Case Step detector
+            case Sensor.TYPE_STEP_DETECTOR:
 
-            // Calculate the number of steps
+                // Calculate the number of steps
+                float steps = event.values[0];
+                countSteps(steps);
+
+            break;
+
 
         }
     }
@@ -233,8 +246,8 @@ class StepCounterListener implements SensorEventListener {
 
     // Calculate the number of steps from the step detector
     private void countSteps(float step) {
-
-
+        mAndroidStepCount += 1;
+        Log.d("STEPS (SD): ", String.valueOf(mAndroidStepCount));
 
     }
 }
