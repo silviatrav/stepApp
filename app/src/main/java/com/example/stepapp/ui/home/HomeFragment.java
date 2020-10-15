@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,12 +31,16 @@ import java.util.TimeZone;
 
 public class HomeFragment extends Fragment {
     MaterialButtonToggleGroup materialButtonToggleGroup;
+    RadioGroup radioButtonGroup;
+    RadioButton accelerometer, stepDetect;
 
     // Text view and Progress Bar variables
     public TextView stepsCountTextView;
     public ProgressBar stepsCountProgressBar;
 
     private SensorEventListener listener;
+
+    boolean use_acceloremeter;
 
     // TODO 1: ACC sensors.
     private Sensor mSensorACC;
@@ -51,6 +57,9 @@ public class HomeFragment extends Fragment {
         // TODO 9: Initialize the TextView variable
         stepsCountTextView = (TextView) root.findViewById(R.id.stepsCount);
 
+        // Initialize ProgressBar variable
+        stepsCountProgressBar = (ProgressBar) root.findViewById(R.id.progressBar);
+        stepsCountProgressBar.setMax(100);
 
         // TODO 2: Get an instance of the sensor manager.
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
@@ -98,6 +107,43 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+
+        // RadioGroup button
+        radioButtonGroup = (RadioGroup) root.findViewById(R.id.toggleRadioButtonGroup);
+        radioButtonGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean checked = ((RadioButton) v).isChecked();
+
+                switch(v.getId()) {
+                    case R.id.Accelerometer:
+                        if (checked)
+                            use_acceloremeter = true;
+                            break;
+                    case R.id.stepDetector:
+                        if (checked)
+                            use_acceloremeter = false;
+                            break;
+                }
+
+                if (use_acceloremeter){
+                    if(mSensorACC != null){
+                        StepCounterListener.enable_acc();
+                        Toast.makeText(getContext(), "Enabled Accelerometer mode", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(getContext(),R.string.acc_not_available,Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    if(mSensorSD != null){
+                        StepCounterListener.enable_sd();
+                        Toast.makeText(getContext(), "Enabled Step Detector mode", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(getContext(),R.string.step_not_available,Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
         //////////////////////////////////////
         return root;
 
@@ -118,11 +164,12 @@ class StepCounterListener implements SensorEventListener {
     int stepThreshold = 6;
 
     // Android step detector
-    int mAndroidStepCount = 0;
+    private int mAndroidStepCount = 0;
 
     // TextView
-    TextView stepsCountTextView;
+    private TextView stepsCountTextView;
     // ProgressBar
+    private ProgressBar stepsCountProgressBar;
 
     //TODO 10
     public StepCounterListener(TextView tv){
@@ -250,5 +297,8 @@ class StepCounterListener implements SensorEventListener {
         Log.d("STEPS (SD): ", String.valueOf(mAndroidStepCount));
 
     }
+
+    public static void enable_acc(){};
+    public static void enable_sd(){};
 }
 

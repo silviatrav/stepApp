@@ -19,6 +19,9 @@
     <string name="step_permission_denied">permission denied</string>
     <string name="acc_not_available">ACC not available</string>
     <string name="step_not_available">step detector not available</string>
+    <string name="stepsCount">0</string>
+    <string name="accelerometer">ACCELOREMETER</string>
+    <string name="step_detector">STEP DETECTOR</string>
 
 </resources>
 
