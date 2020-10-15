@@ -60,7 +60,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:progressDrawable="@drawable/circle"/>
+        android:progressDrawable="@drawable/circle"
+        style="?android:progressBarStyleHorizontal"/>
 
 
     <com.google.android.material.button.MaterialButtonToggleGroup
