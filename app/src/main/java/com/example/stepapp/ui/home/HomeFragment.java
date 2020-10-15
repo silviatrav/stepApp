@@ -40,7 +40,7 @@ public class HomeFragment extends Fragment {
 
     private SensorEventListener listener;
 
-    boolean use_acceloremeter;
+    public boolean use_acceloremeter = true;
 
     // TODO 1: ACC sensors.
     private Sensor mSensorACC;
@@ -110,23 +110,20 @@ public class HomeFragment extends Fragment {
 
         // RadioGroup button
         radioButtonGroup = (RadioGroup) root.findViewById(R.id.toggleRadioButtonGroup);
-        radioButtonGroup.setOnClickListener(new View.OnClickListener() {
+        radioButtonGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
             @Override
-            public void onClick(View v) {
-                boolean checked = ((RadioButton) v).isChecked();
-
-                switch(v.getId()) {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch(checkedId) {
                     case R.id.Accelerometer:
-                        if (checked)
-                            use_acceloremeter = true;
-                            break;
+                        use_acceloremeter = true;
+                        break;
                     case R.id.stepDetector:
-                        if (checked)
-                            use_acceloremeter = false;
-                            break;
+                        use_acceloremeter = false;
+                        break;
                 }
 
-                if (use_acceloremeter){
+                if (use_acceloremeter == true){
                     if(mSensorACC != null){
                         StepCounterListener.enable_acc();
                         Toast.makeText(getContext(), "Enabled Accelerometer mode", Toast.LENGTH_SHORT).show();
@@ -142,9 +139,10 @@ public class HomeFragment extends Fragment {
                     }
                 }
             }
+
         });
 
-        //////////////////////////////////////
+
         return root;
 
 
