@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import static android.widget.Toast.makeText;
+import static java.security.AccessController.getContext;
 
 public class HomeFragment extends Fragment {
     MaterialButtonToggleGroup materialButtonToggleGroup;
@@ -114,12 +115,12 @@ public class HomeFragment extends Fragment {
                 switch(checkedId) {
                     case R.id.Accelerometer:
                         StepCounterListener.resetSteps();
-                        StepCounterListener.enable_acc();
+                        StepCounterListener.usingStepDetector = false;
                         makeText(getContext(), "Enabled Accelerometer mode", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.stepDetector:
                         StepCounterListener.resetSteps();
-                        StepCounterListener.enable_sd();
+                        StepCounterListener.usingStepDetector = true;
                         makeText(getContext(), "Enabled Step Detector mode", Toast.LENGTH_SHORT).show();
                         break;
                 }
@@ -133,7 +134,7 @@ public class HomeFragment extends Fragment {
 // Sensor event listener
 class StepCounterListener implements SensorEventListener {
 
-    public static boolean using_acc;
+    public static boolean usingStepDetector;
     private long lastUpdate = 0;
 
     // ACC Step counter
@@ -200,20 +201,20 @@ class StepCounterListener implements SensorEventListener {
 
             /// STEP COUNTER ACC ////
             peakDetection();
-
             break;
 
             // Case Step detector
+
             case Sensor.TYPE_STEP_DETECTOR:
                 countSteps(event.values[0]);
+                if(usingStepDetector == true)
+                    enable_sd();
 
             break;
 
 
         }
     }
-
-
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -257,9 +258,8 @@ class StepCounterListener implements SensorEventListener {
                     Log.d("ACC STEPS: ", String.valueOf(mACCStepCounter));
 
                     //TODO 12: update the text view
-                    stepsCountTextView.setText(String.valueOf(mACCStepCounter));
-                    stepsCountProgressBar.setProgress(mACCStepCounter);
-
+                    if(usingStepDetector == false)
+                        StepCounterListener.enable_acc();
                 }
             }
         }
